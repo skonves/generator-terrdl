@@ -3,10 +3,11 @@
     "lib": ["es6"],
     "module": "commonjs",
     "noImplicitReturns": true,
-    "outDir": "lib",
-    "sourceMap": true,
+    "outDir": "generators",
+    "sourceMap": false,
     "target": "es6",
-    "declaration": true
+    "declaration": false
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["**/*.tests.ts", "src/*/templates/*"]
 }
