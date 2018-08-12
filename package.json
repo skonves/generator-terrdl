@@ -1,6 +1,6 @@
 {
   "name": "generator-terrdl",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TERRDL - Application shell built with Typescript, Express, React, Redux, Docker, and Less",
   "main": "./lib/index.js",
   "scripts": {
