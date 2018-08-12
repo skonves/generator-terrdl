@@ -1,0 +1,96 @@
+import { Index, Patch } from 'flux-standard-functions';
+
+import { Thunk } from '..';
+import { <%= pascal %>, New<%= pascal %>, <%= pascal %>Update, I<%= pascal %>Service } from '.';
+import { Action, Type } from './action-types';
+
+export function load<%= pascal %>(<%= camel %>Id: string): Thunk {
+  return async (dispatch, getState, registry) => {
+    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+
+    const <%= camel %> = await <%= camel %>Service.get<%= pascal %>(<%= camel %>Id);
+    dispatch(patch<%= pascal %>(<%= camel %>Id, <%= camel %>));
+  };
+}
+
+export function create<%= pascal %>(<%= camel %>: New<%= pascal %>): Thunk {
+  return async (dispatch, getState, registry) => {
+    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+
+    const created<%= pascal %> = await <%= camel %>Service.create<%= pascal %>(<%= camel %>);
+    dispatch(patch<%= pascal %>(created<%= pascal %>.id, created<%= pascal %>));
+  };
+}
+
+export function update<%= pascal %>(<%= camel %>Id: string, updateData: <%= pascal %>Update): Thunk {
+  return async (dispatch, getState, registry) => {
+    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+
+    const updated<%= pascal %> = await <%= camel %>Service.update<%= pascal %>(
+      <%= camel %>Id,
+      updateData,
+    );
+    dispatch(patch<%= pascal %>(updated<%= pascal %>.id, updated<%= pascal %>));
+  };
+}
+
+export function delete<%= pascal %>(<%= camel %>Id: string): Thunk {
+  return async (dispatch, getState, registry) => {
+    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+
+    await <%= camel %>Service.delete<%= pascal %>(<%= camel %>Id);
+    dispatch(unset<%= pascal %>(<%= camel %>Id));
+  };
+}
+
+export function patch<%= pascal %>(
+  <%= camel %>Id: string,
+  updateData: Patch<<%= pascal %>>,
+): Action.Patch<%= pascal %> {
+  return {
+    type: Type.patch<%= pascal %>,
+    payload: {
+      <%= camel %>Id,
+      updateData,
+    },
+  };
+}
+
+export function patchEach<%= pascal %>(
+  updateData: Index<Patch<<%= pascal %>>>,
+): Action.PatchEach<%= pascal %> {
+  return {
+    type: Type.patchEach<%= pascal %>,
+    payload: updateData,
+  };
+}
+
+export function set<%= pascal %>(<%= camel %>: <%= pascal %>): Action.Set<%= pascal %> {
+  return {
+    type: Type.set<%= pascal %>,
+    payload: <%= camel %>,
+  };
+}
+
+export function setEach<%= pascal %>(<%= camelPlural %>: <%= pascal %>[]): Action.SetEach<%= pascal %> {
+  return {
+    type: Type.setEach<%= pascal %>,
+    payload: <%= camelPlural %>,
+  };
+}
+
+export function unset<%= pascal %>(<%= camel %>Id: string): Action.Unset<%= pascal %> {
+  return {
+    type: Type.unset<%= pascal %>,
+    payload: <%= camel %>Id,
+  };
+}
+
+export function unsetEach<%= pascal %>(
+  <%= camel %>Ids: string[],
+): Action.UnsetEach<%= pascal %> {
+  return {
+    type: Type.unsetEach<%= pascal %>,
+    payload: <%= camel %>Ids,
+  };
+}

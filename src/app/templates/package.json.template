@@ -1,0 +1,16 @@
+{
+  "name": "<%= name %>",
+  "version": "<%= version %>",
+  "description": "<%= description %>",
+  "main": "./.compiled/server/index.js",
+  "scripts": {
+    "prebuild": "npm run lint && rm -rf .compiled/*",
+    "build": "tsc && webpack",
+    "lint": "tslint -c tslint.json -e 'node_modules/**/*' '**/*.ts'",
+    "start": "node ./.compiled/server/index.js",
+    "test": "NODE_ENV=test nyc mocha --require source-map-support/register --require ts-node/register --recursive './src/**/*.tests.ts'"
+  },
+  "keywords": [],
+  "author": "<%= author %>",
+  "license": "<%= license %>"
+}

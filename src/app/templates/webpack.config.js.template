@@ -1,0 +1,54 @@
+const path = require('path');
+const webpack = require('webpack');
+const merge = require('webpack-merge');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+
+const config = {
+  entry: ['./src/client/index.tsx', './src/common/index.less'],
+  target: 'web',
+  output: {
+    path: path.resolve(__dirname, '.compiled/dist'),
+    filename: 'bundle.[hash].js',
+    publicPath: '/static/',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        include: path.resolve(__dirname, 'src'),
+        loader: 'ts-loader',
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+      },
+      {
+        test: /\.(less)$/,
+        loader: ExtractTextPlugin.extract(['css-loader', 'less-loader']),
+      },
+    ],
+  },
+  plugins: [
+    new ExtractTextPlugin({
+      filename: 'style.[hash].css',
+      allChunks: true,
+    }),
+  ],
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx'],
+  },
+};
+
+module.exports =
+  process.env.NODE_ENV === 'production'
+    ? merge(config, {
+        plugins: [
+          new UglifyJSPlugin(),
+          new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify('production'),
+          }),
+        ],
+      })
+    : config;

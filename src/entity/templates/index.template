@@ -1,0 +1,10 @@
+export {
+  patch<%= pascal %>,
+  patchEach<%= pascal %>,
+  set<%= pascal %>,
+  setEach<%= pascal %>,
+  unset<%= pascal %>,
+  unsetEach<%= pascal %>,
+} from './actions';
+export { I<%= pascal %>Service } from './interfaces';
+export { <%= pascal %>, New<%= pascal %>, <%= pascal %>Update } from './types';

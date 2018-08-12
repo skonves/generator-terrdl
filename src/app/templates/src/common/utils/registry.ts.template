@@ -1,0 +1,19 @@
+export class Registry<TKey> {
+  for(key: TKey) {
+    const registry = this;
+    return {
+      use<T>(initializer: Initializer<TKey, T>): Registry<TKey> {
+        registry.map.set(key, initializer);
+        return registry;
+      },
+    };
+  }
+
+  get<T>(key: TKey): T {
+    return this.map.get(key)(this.get.bind(this));
+  }
+
+  private readonly map = new Map<TKey, Initializer<TKey, any>>();
+}
+
+type Initializer<TKey, T> = (get: (key: TKey) => T) => any;

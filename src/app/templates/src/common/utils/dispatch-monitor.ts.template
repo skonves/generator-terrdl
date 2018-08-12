@@ -1,0 +1,51 @@
+/**
+ * Middleware for monitoring the dispatch of async actions
+ */
+export class DispatchMonitor {
+  /** Gets the Redux middleware */
+  getMiddleware() {
+    return store => {
+      this.store = this.store || store;
+      return next => action => {
+        if (typeof action === 'function') {
+          this.count++;
+          return next(action)
+            .then(value => {
+              this.count--;
+              if (this.count === 0) {
+                this.callback();
+              }
+              return value;
+            })
+            .catch(err => this.callback(err));
+        } else {
+          return next(action);
+        }
+      };
+    };
+  }
+
+  /** Returns a promise that resolves when all dispatched async actions have resolved. */
+  wait() {
+    return new Promise((resolve, reject) => {
+      if (this.error) {
+        reject(this.error);
+      } else if (this.count === 0) {
+        resolve(this.store.getState());
+      } else {
+        this.callback = error => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(this.store.getState());
+          }
+        };
+      }
+    });
+  }
+
+  private count: number = 0;
+  private error: any;
+  private store: any;
+  private callback: (err?: any) => void = err => (this.error = err);
+}

@@ -1,0 +1,85 @@
+import {
+  define,
+  Index,
+  indexOf,
+  patch,
+  required,
+  set,
+  setEach,
+  unset,
+  unsetEach,
+} from 'flux-standard-functions';
+
+import { FluxStandardAction } from '..';
+import { <%= pascal %> } from '.';
+import { Type, Action } from './action-types';
+import { <%= camel %>Def } from './types';
+
+export type <%= pascal %>ReducerState = {
+  data: Index<<%= pascal %>>;
+};
+
+const stateDef = define<<%= pascal %>ReducerState>({
+  data: required(indexOf(<%= camel %>Def)),
+});
+
+const initialState: <%= pascal %>ReducerState = {
+  data: {},
+};
+
+export function <%= camel %>Reducer(
+  state: <%= pascal %>ReducerState = initialState,
+  action: FluxStandardAction<Type, any, any>,
+): <%= pascal %>ReducerState {
+  switch (action && action.type) {
+    case Type.patch<%= pascal %>: {
+      const { payload } = action as Action.Patch<%= pascal %>;
+      if (!payload) return state;
+
+      return patch(
+        state,
+        { data: { [payload.<%= camel %>Id]: payload.updateData } },
+        stateDef,
+      );
+    }
+    case Type.patchEach<%= pascal %>: {
+      const { payload } = action as Action.PatchEach<%= pascal %>;
+
+      return patch(state, { data: payload }, stateDef);
+    }
+    case Type.set<%= pascal %>: {
+      const { payload } = action as Action.Set<%= pascal %>;
+      if (!payload) return state;
+
+      const data = set(state.data, payload, <%= camel %>Def);
+
+      return data === state.data ? state : { ...state, data };
+    }
+    case Type.setEach<%= pascal %>: {
+      const { payload } = action as Action.SetEach<%= pascal %>;
+      if (!payload) return state;
+
+      const data = setEach(state.data, payload, <%= camel %>Def);
+
+      return data === state.data ? state : { ...state, data };
+    }
+    case Type.unset<%= pascal %>: {
+      const { payload } = action as Action.Unset<%= pascal %>;
+      if (!payload) return state;
+
+      const data = unset(state.data, payload);
+
+      return data === state.data ? state : { ...state, data };
+    }
+    case Type.unsetEach<%= pascal %>: {
+      const { payload } = action as Action.UnsetEach<%= pascal %>;
+      if (!payload) return state;
+
+      const data = unsetEach(state.data, payload);
+
+      return data === state.data ? state : { ...state, data };
+    }
+    default:
+      return state;
+  }
+}

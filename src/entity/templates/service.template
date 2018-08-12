@@ -1,0 +1,24 @@
+import {
+  I<%= pascal %>Service,
+  <%= pascal %>,
+  New<%= pascal %>,
+  <%= pascal %>Update,
+} from '../../common/entities/<%= kababPlural %>';
+
+export class <%= scope %><%= pascal %>Service implements I<%= pascal %>Service {
+  async get<%= pascal %>(id: string): Promise<<%= pascal %>> {
+    throw new Error('Method not implemented.');
+  }
+
+  async create<%= pascal %>(<%= camel %>: New<%= pascal %>): Promise<<%= pascal %>> {
+    throw new Error('Method not implemented.');
+  }
+
+  async update<%= pascal %>(<%= camel %>Id: string, updateData: <%= pascal %>Update): Promise<<%= pascal %>> {
+    throw new Error('Method not implemented.');
+  }
+
+  async delete<%= pascal %>(id: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+}

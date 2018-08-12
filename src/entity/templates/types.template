@@ -1,0 +1,20 @@
+import { define, key } from 'flux-standard-functions';
+
+export type <%= pascal %> = {
+  id: string;
+  // TODO: add more properties here
+};
+
+export const <%= camel %>Def = define<<%= pascal %>>({
+  id: key(),
+  // TODO: add more properties here to match the type defined above
+});
+
+export type New<%= pascal %> = {
+  id: string;
+  // TODO: add required properties here
+};
+
+export type <%= pascal %>Update = {
+  // TODO: add mutable properties here
+};

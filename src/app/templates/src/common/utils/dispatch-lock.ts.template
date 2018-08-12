@@ -1,0 +1,32 @@
+/**
+ * Middleware for temporarily disabling dispatch
+ */
+export class DispatchLock {
+  /** Create a new lock in a default state of "locked". */
+  constructor(isLocked = true) {
+    this.isLocked = isLocked;
+  }
+
+  /** Gets the Redux middleware */
+  getMiddleware() {
+    return store => next => action => {
+      if (this.isLocked) {
+        return Promise.resolve();
+      } else {
+        return next(action);
+      }
+    };
+  }
+
+  /** Locks dispatch. All calls to `dispatch()` will no-op. */
+  lock() {
+    this.isLocked = true;
+  }
+
+  /** Unlocks dispatch. All calls to `dispatch()` will excecute normally. */
+  unlock() {
+    this.isLocked = false;
+  }
+
+  private isLocked: boolean;
+}

@@ -1,0 +1,8 @@
+import { <%= pascal %>, New<%= pascal %>, <%= pascal %>Update } from '.';
+
+export interface I<%= pascal %>Service {
+  get<%= pascal %>(id: string): Promise<<%= pascal %>>;
+  create<%= pascal %>(<%= camel %>: New<%= pascal %>): Promise<<%= pascal %>>;
+  update<%= pascal %>(<%= camel %>Id: string, updateData: <%= pascal %>Update): Promise<<%= pascal %>>;
+  delete<%= pascal %>(id: string): Promise<void>;
+}

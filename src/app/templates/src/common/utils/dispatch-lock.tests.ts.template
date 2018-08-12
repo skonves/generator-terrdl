@@ -1,0 +1,137 @@
+import { assert, expect } from 'chai';
+import * as redux from 'redux';
+import thunk from 'redux-thunk';
+import * as sinon from 'sinon';
+
+import { DispatchLock } from '.';
+
+describe('DispatchLock', () => {
+  it('dispatches synchronous actions when unlocked', () => {
+    // ARRANGE
+    const dispatchLock = new DispatchLock();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(dispatchLock.getMiddleware()),
+    );
+
+    dispatchLock.unlock();
+
+    // ACT
+    store.dispatch({ type: 'ACTION' });
+
+    // ASSERT
+    expect(store.getState()).to.deep.equal({ actionCalled: true });
+  });
+
+  it('dispatches asynchronous actions when unlocked', async () => {
+    // ARRANGE
+    const dispatchLock = new DispatchLock();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(dispatchLock.getMiddleware(), thunk),
+    );
+
+    const func = sinon.spy();
+
+    const action = async dispatch => {
+      pause(10);
+      func();
+      dispatch({ type: 'ACTION' });
+    };
+
+    dispatchLock.unlock();
+
+    // ACT
+    store.dispatch(action);
+
+    // ASSERT
+    await pause(20); // Ensure async actions have completed
+    expect(store.getState()).to.deep.equal({ actionCalled: true });
+    assert(func.called);
+  });
+
+  it('does not dispatch synchronous actions when locked', () => {
+    // ARRANGE
+    const dispatchLock = new DispatchLock();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(dispatchLock.getMiddleware()),
+    );
+
+    dispatchLock.lock();
+
+    // ACT
+    store.dispatch({ type: 'ACTION' });
+
+    // ASSERT
+    expect(store.getState()).to.deep.equal({ actionCalled: false });
+  });
+
+  it('does not dispatch asynchronous actions when locked', async () => {
+    // ARRANGE
+    const dispatchLock = new DispatchLock();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(dispatchLock.getMiddleware(), thunk),
+    );
+
+    const func = sinon.spy();
+
+    const action = async dispatch => {
+      pause(10);
+      func();
+      dispatch({ type: 'ACTION' });
+    };
+
+    dispatchLock.lock();
+
+    // ACT
+    store.dispatch(action);
+
+    // ASSERT
+    await pause(20); // Ensure async action could have completed
+    expect(store.getState()).to.deep.equal({ actionCalled: false });
+    assert(func.notCalled);
+  });
+
+  it('is locked by default', () => {
+    // ARRANGE
+    const dispatchLock = new DispatchLock();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(dispatchLock.getMiddleware()),
+    );
+
+    dispatchLock.lock();
+
+    // ACT
+    store.dispatch({ type: 'ACTION' });
+
+    // ASSERT
+    expect(store.getState()).to.deep.equal({ actionCalled: false });
+  });
+});
+
+const initialState: TestState = { actionCalled: false };
+
+const reducer = (state: TestState = initialState, action: any): TestState => {
+  switch (action.type) {
+    case 'ACTION':
+      return { ...state, actionCalled: true };
+    default:
+      return state;
+  }
+};
+
+type TestState = {
+  actionCalled: boolean;
+};
+
+function pause(ms: number) {
+  return new Promise(r => setTimeout(r, ms));
+}

@@ -1,0 +1,245 @@
+import { assert, expect } from 'chai';
+import * as redux from 'redux';
+import thunk from 'redux-thunk';
+
+import { DispatchMonitor } from '.';
+
+describe('DispatchMonitor', () => {
+  it('immediately returns initial state when nothing is dispatched', async () => {
+    // ARRANGE
+    const monitor = new DispatchMonitor();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(monitor.getMiddleware(), thunk),
+    );
+
+    // ACT
+    const finalState = await monitor.wait();
+
+    // ASSERT
+    expect(finalState).to.deep.equal(initialState);
+  });
+
+  it('immediately returns updated state when sync actions are dispatched', async () => {
+    // ARRANGE
+    const monitor = new DispatchMonitor();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(monitor.getMiddleware(), thunk),
+    );
+
+    const expectedState: TestState = {
+      actionOneCalled: true,
+      actionTwoCalled: true,
+      actionThreeCalled: false,
+    };
+
+    // ACT
+    store.dispatch({ type: 'ACTION_ONE' });
+    store.dispatch({ type: 'ACTION_TWO' });
+    const finalState = await monitor.wait();
+
+    // ASSERT
+    expect(finalState).to.deep.equal(expectedState);
+  });
+
+  it('returns updated state after async action resolves', async () => {
+    // ARRANGE
+    const monitor = new DispatchMonitor();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(monitor.getMiddleware(), thunk),
+    );
+
+    const actionOne = { type: 'ACTION_ONE' };
+
+    const actionTwo = async dispatch => {
+      await pause(10);
+      dispatch({ type: 'ACTION_TWO' });
+    };
+
+    const expectedState: TestState = {
+      actionOneCalled: true,
+      actionTwoCalled: true,
+      actionThreeCalled: false,
+    };
+
+    // ACT
+    store.dispatch(actionOne);
+    store.dispatch(actionTwo);
+    expect(store.getState().actionTwoCalled).to.be.false; // Sanity check
+    const finalState = await monitor.wait();
+
+    // ASSERT
+    expect(finalState).to.deep.equal(expectedState);
+  });
+
+  it('returns updated state after multiple async actions resolve', async () => {
+    // ARRANGE
+    const monitor = new DispatchMonitor();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(monitor.getMiddleware(), thunk),
+    );
+
+    const actionOne = { type: 'ACTION_ONE' };
+
+    const actionThree = async dispatch => {
+      await pause(10);
+      dispatch({ type: 'ACTION_THREE' });
+    };
+
+    const actionTwo = async dispatch => {
+      await pause(10);
+      dispatch({ type: 'ACTION_TWO' });
+      dispatch(actionThree);
+    };
+
+    const expectedState: TestState = {
+      actionOneCalled: true,
+      actionTwoCalled: true,
+      actionThreeCalled: true,
+    };
+
+    // ACT
+    store.dispatch(actionOne);
+    store.dispatch(actionTwo);
+    expect(store.getState().actionTwoCalled).to.be.false; // Sanity checks
+    expect(store.getState().actionThreeCalled).to.be.false;
+    const finalState = await monitor.wait();
+
+    // ASSERT
+    expect(finalState).to.deep.equal(expectedState);
+  });
+
+  it('returns updated state even if call to wait() is delayed', async () => {
+    // ARRANGE
+    const monitor = new DispatchMonitor();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(monitor.getMiddleware(), thunk),
+    );
+
+    const actionOne = { type: 'ACTION_ONE' };
+
+    const actionTwo = async dispatch => {
+      await pause(10);
+      dispatch({ type: 'ACTION_TWO' });
+    };
+
+    const expectedState: TestState = {
+      actionOneCalled: true,
+      actionTwoCalled: true,
+      actionThreeCalled: false,
+    };
+
+    // ACT
+    store.dispatch(actionOne);
+    store.dispatch(actionTwo);
+    expect(store.getState().actionTwoCalled).to.be.false; // Sanity check
+
+    await pause(30);
+    const finalState = await monitor.wait();
+
+    // ASSERT
+    expect(finalState).to.deep.equal(expectedState);
+  });
+
+  it('rejects if any async action throws', async () => {
+    // ARRANGE
+    const monitor = new DispatchMonitor();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(monitor.getMiddleware(), thunk),
+    );
+
+    const error = new Error('Simulated error');
+
+    const actionOne = { type: 'ACTION_ONE' };
+
+    const actionTwo = async dispatch => {
+      throw error;
+    };
+
+    // ACT
+    store.dispatch(actionOne);
+    store.dispatch(actionTwo);
+    expect(store.getState().actionTwoCalled).to.be.false; // Sanity check
+
+    try {
+      const finalState = await monitor.wait();
+      assert.fail();
+    } catch (err) {
+      // ASSERT
+      expect(err).to.equal(error);
+    }
+  });
+
+  it('rejects if any async action throws even if call to wait() is delayed', async () => {
+    // ARRANGE
+    const monitor = new DispatchMonitor();
+
+    const store = redux.createStore(
+      reducer,
+      redux.applyMiddleware(monitor.getMiddleware(), thunk),
+    );
+
+    const error = new Error('Simulated error');
+
+    const actionOne = { type: 'ACTION_ONE' };
+
+    const actionTwo = async dispatch => {
+      throw error;
+    };
+
+    // ACT
+    store.dispatch(actionOne);
+    store.dispatch(actionTwo);
+    expect(store.getState().actionTwoCalled).to.be.false; // Sanity check
+
+    await pause(10); // outside of try/catch
+
+    try {
+      const finalState = await monitor.wait();
+      assert.fail();
+    } catch (err) {
+      // ASSERT
+      expect(err).to.equal(error);
+    }
+  });
+});
+
+const initialState = {
+  actionOneCalled: false,
+  actionTwoCalled: false,
+  actionThreeCalled: false,
+};
+
+const reducer = (state: TestState = initialState, action: any): TestState => {
+  switch (action.type) {
+    case 'ACTION_ONE':
+      return { ...state, actionOneCalled: true };
+    case 'ACTION_TWO':
+      return { ...state, actionTwoCalled: true };
+    case 'ACTION_THREE':
+      return { ...state, actionThreeCalled: true };
+    default:
+      return state;
+  }
+};
+
+type TestState = {
+  actionOneCalled: boolean;
+  actionTwoCalled: boolean;
+  actionThreeCalled: boolean;
+};
+
+function pause(ms: number) {
+  return new Promise(r => setTimeout(r, ms));
+}

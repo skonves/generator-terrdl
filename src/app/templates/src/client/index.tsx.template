@@ -1,0 +1,33 @@
+import React from 'react';
+import { createStore, applyMiddleware, compose } from 'redux';
+import { hydrate } from 'react-dom';
+import thunk from 'redux-thunk';
+import { Provider } from 'react-redux';
+import { Router } from 'react-router';
+import { browserHistory } from 'react-router';
+
+import { registry } from './registry';
+import { reducers } from '../common/entities';
+import router from '../common/router';
+import { DispatchLock } from '../common/utils';
+
+const lock = new DispatchLock();
+const composeEnhancers =
+  window['__REDUX_DEVTOOLS_EXTENSION_COMPOSE__'] || compose;
+const store = createStore(
+  reducers,
+  window['$REDUX_STATE'],
+  composeEnhancers(
+    applyMiddleware(lock.getMiddleware(), thunk.withExtraArgument(registry)),
+  ),
+);
+
+hydrate(
+  <Provider store={store}>
+    <Router history={browserHistory} routes={router} />
+  </Provider>,
+  document.querySelector('#app'),
+);
+
+lock.unlock();
+console.log('ready!');

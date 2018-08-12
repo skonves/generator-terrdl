@@ -1,0 +1,27 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { ApplicationState } from '../common/entities';
+
+const files = fs.readdirSync(path.join(__dirname, '..', 'dist'));
+const bundle = files.find(file => file.startsWith('bundle.'));
+const style = files.find(file => file.startsWith('style.'));
+
+export function render(state: ApplicationState, html: string) {
+  return `
+<!doctype html>
+<html lang="utf-8">
+  <head>
+  <title>React App</title>
+  <link rel="stylesheet" type="text/css" href="/dist/${style}">
+  </head>
+  <body>
+  <div id="app">${html}</div>
+  <script>
+    window.$REDUX_STATE = ${JSON.stringify(state)};
+  </script>
+  <script src="/dist/${bundle}"></script>
+  </body>
+</html>
+`;
+}

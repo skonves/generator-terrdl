@@ -1,0 +1,42 @@
+import { Index, Patch } from 'flux-standard-functions';
+
+import { FluxStandardAction } from '..';
+import { <%= pascal %> } from '.';
+
+export enum Type {
+  patch<%= pascal %> = '<%= namespace %>_PATCH_<%= screamingSnake %>',
+  patchEach<%= pascal %> = '<%= namespace %>_PATCHEACH_<%= screamingSnake %>',
+  set<%= pascal %> = '<%= namespace %>_SET_<%= screamingSnake %>',
+  setEach<%= pascal %> = '<%= namespace %>_SETEACH_<%= screamingSnake %>',
+  unset<%= pascal %> = '<%= namespace %>_UNSET_<%= screamingSnake %>',
+  unsetEach<%= pascal %> = '<%= namespace %>_UNSETEACH_<%= screamingSnake %>',
+}
+
+export namespace Action {
+  export type Patch<%= pascal %> = FluxStandardAction<
+    Type.patch<%= pascal %>,
+    {
+      <%= camel %>Id: string;
+      updateData: Patch<<%= pascal %>>;
+    }
+  >;
+
+  export type PatchEach<%= pascal %> = FluxStandardAction<
+    Type.patchEach<%= pascal %>,
+    Index<Patch<<%= pascal %>>>
+  >;
+
+  export type Set<%= pascal %> = FluxStandardAction<Type.set<%= pascal %>, <%= pascal %>>;
+
+  export type SetEach<%= pascal %> = FluxStandardAction<
+    Type.setEach<%= pascal %>,
+    Index<<%= pascal %>>
+  >;
+
+  export type Unset<%= pascal %> = FluxStandardAction<Type.unset<%= pascal %>, string>;
+
+  export type UnsetEach<%= pascal %> = FluxStandardAction<
+    Type.unsetEach<%= pascal %>,
+    string[]
+  >;
+}

@@ -1,0 +1,79 @@
+import * as path from 'path';
+import React from 'react';
+import express from 'express';
+import { Provider } from 'react-redux';
+import { applyMiddleware, createStore } from 'redux';
+import thunk from 'redux-thunk';
+import { match, RouterContext } from 'react-router';
+import { renderToString } from 'react-dom/server';
+
+import { app as api } from './api';
+import { render } from './page';
+import { registry } from './registry';
+import { reducers, ApplicationState } from '../common/entities';
+import router from '../common/router';
+import { DispatchLock, DispatchMonitor } from '../common/utils';
+
+const app = express();
+
+app.use('/api', api);
+app.use('/dist', express.static(path.join(__dirname, '../dist')));
+
+app.get('/', (req, res, next) => {
+  match(
+    {
+      routes: router,
+      location: req.originalUrl,
+    },
+    async (error, redirectLocation, renderProps) => {
+      if (error) {
+        return next(error);
+      } else if (redirectLocation) {
+        return res.redirect(
+          302,
+          redirectLocation.pathname + redirectLocation.search,
+        );
+      }
+      // TODO: consider 404ing on falsey renderProps
+
+      // First-pass render
+      const monitor = new DispatchMonitor();
+      const initialStore = createStore(
+        reducers,
+        applyMiddleware(
+          monitor.getMiddleware(), // always needs to be before thunk;
+          thunk.withExtraArgument(registry),
+        ),
+      );
+      const initialHtml = renderToString(
+        <Provider store={initialStore}>
+          <RouterContext {...renderProps} />
+        </Provider>,
+      );
+
+      const state = (await monitor.wait()) as ApplicationState;
+
+      // Second-pass render
+      const lock = new DispatchLock();
+      const finalStore = createStore(
+        reducers,
+        state,
+        applyMiddleware(
+          lock.getMiddleware(),
+          thunk.withExtraArgument(registry),
+        ),
+      );
+      const finalHtml = renderToString(
+        <Provider store={finalStore}>
+          <RouterContext {...renderProps} />
+        </Provider>,
+      );
+
+      res.status(200).send(render(state, finalHtml));
+    },
+  );
+});
+
+app.listen(3000, () => {
+  console.log('listening on 3000 ... ');
+});
