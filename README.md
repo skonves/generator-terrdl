@@ -1,16 +1,26 @@
-# Typescript Application
+# TERRDL Generator
 
-Base project for creating a console application in Typescript
+Application shells built with Typescript, Express, React, Redux, Docker, and Less
 
 ## How to:
 
-### Run this project
+### Install the generator
 
-1.  Build the code: `npm run build`
-1.  Run it! `npm start`
+1. Install yeoman: `npm install --global yeoman`
+1. Install TERRDL: `npm install --global generator-terrdl`
 
-### Create and run tests
+### Scaffold a new App
 
-1.  Add tests by creating files with the `.tests.ts` suffix
-1.  Run the tests: `npm t`
-1.  Test coverage can be viewed at `/coverage/lcov-report/index.html`
+1. Create a new folder for your app
+1. From within that folder run `yo terrdl`
+1. Wait for yeoman to finish
+1. Build the new app: `npm run build`
+1. And start it! `npm start`
+
+### Add a new entity
+
+1. Run: `yo terrdl:entity {entity-name}`
+  * The entity name can be in a variety of cases, but cannot contain spaces
+  * Pluralization is automatically handled by the generator
+1. Use option `a` to accept all change
+1. Implement services and add new actions as needed
