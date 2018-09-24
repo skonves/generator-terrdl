@@ -6,7 +6,7 @@ Application shells built with Typescript, Express, React, Redux, Docker, and Les
 
 ### Install the generator
 
-1. Install yeoman: `npm install --global yeoman`
+1. Install yeoman: `npm install --global yo`
 1. Install TERRDL: `npm install --global generator-terrdl`
 
 ### Scaffold a new App
