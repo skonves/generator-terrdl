@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import { Registry } from '../utils/registry';
+import { Registry } from '../types';
 
 export type FluxStandardAction<
   TType extends string = any,
@@ -16,7 +16,7 @@ export type FluxStandardAction<
 export type Thunk<T = void> = (
   dispatch: (action: FluxStandardAction<any, any, any> | Thunk<any>) => any,
   getState: () => ApplicationState,
-  registry: Registry<any>,
+  registry: Registry,
 ) => Promise<T>;
 
 export type ApplicationState = {};

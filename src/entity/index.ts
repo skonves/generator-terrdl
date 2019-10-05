@@ -1,7 +1,12 @@
 import * as Generator from 'yeoman-generator';
 import * as pluralize from 'pluralize';
 
-import { addEntity, addToServiceIndex, addToRegistry } from './utils';
+import {
+  addEntity,
+  addToServiceIndex,
+  addToRegistry,
+  addToRegistryTypeMap,
+} from './utils';
 
 module.exports = class extends Generator {
   constructor(args, opts) {
@@ -82,6 +87,16 @@ module.exports = class extends Generator {
     );
 
     this.fs.write(
+      this.destinationPath('src/common/types.ts'),
+      addToRegistryTypeMap(
+        this.fs.read(this.destinationPath('src/common/types.ts')),
+        kabab,
+        kababPlural,
+        pascal,
+      ),
+    );
+
+    this.fs.write(
       this.destinationPath('src/client/services/index.ts'),
       addToServiceIndex(
         this.fs.exists(this.destinationPath('src/client/services/index.ts'))
@@ -125,7 +140,7 @@ module.exports = class extends Generator {
       ),
     );
   }
-}
+};
 
 function getCases(input: string) {
   const words = [];

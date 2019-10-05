@@ -37,8 +37,7 @@ module.exports = class extends Generator {
       'src/common/utils/dispatch-monitor.tests.ts',
       'src/common/utils/dispatch-monitor.ts',
       'src/common/utils/index.ts',
-      'src/common/utils/registry.tests.ts',
-      'src/common/utils/registry.ts',
+      'src/common/types.ts',
 
       // Server
       'src/server/api/index.ts',
@@ -99,6 +98,7 @@ module.exports = class extends Generator {
       'react-router-dom',
       'express',
       'flux-standard-functions',
+      'ts-registry',
     ]);
     this.npmInstall(
       [

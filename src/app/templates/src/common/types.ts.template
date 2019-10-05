@@ -1,0 +1,7 @@
+import { Registry as GenericRegistry } from 'ts-registry';
+
+export type Registry = GenericRegistry<{}>;
+
+export function createRegistry(): Registry {
+  return new GenericRegistry();
+}

@@ -1,3 +1,2 @@
 export { DispatchLock } from './dispatch-lock';
 export { DispatchMonitor } from './dispatch-monitor';
-export { Registry } from './registry';
