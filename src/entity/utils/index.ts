@@ -134,6 +134,134 @@ function getRegistryImportReplacement(
   };
 }
 
+export function addToRegistryTypeMap(
+  fileText: string,
+  kabab: string,
+  kababPlural: string,
+  pascal: string,
+) {
+  const sourceFile = ts.createSourceFile(
+    'index.ts',
+    fileText,
+    ts.ScriptTarget.ES2015,
+    true,
+  );
+
+  const replacements = [
+    getRegistryTypeMapReplacement(sourceFile, kabab, pascal),
+    getRegistryTypeMapImportReplacement(sourceFile, kababPlural, pascal),
+  ];
+
+  const text = replacements
+    .filter(x => x)
+    .sort((a, b) => b.start - a.start)
+    .reduce(
+      (acc, replacement) =>
+        acc.slice(0, replacement.start) +
+        replacement.text +
+        acc.slice(replacement.end),
+      sourceFile.text,
+    );
+
+  return prettier.format(text, {
+    singleQuote: true,
+    useTabs: false,
+    tabWidth: 2,
+    trailingComma: 'all',
+    parser: 'typescript',
+  });
+}
+
+function getRegistryTypeMapReplacement(
+  sourceFile: ts.SourceFile,
+  kabab: string,
+  pascal: string,
+): Replacement {
+  const serviceKey = `${kabab}-service`;
+  const interfaceName = `I${pascal}Service`;
+
+  for (const typeReferenceNode of traverse(sourceFile)) {
+    if (ts.isTypeReferenceNode(typeReferenceNode)) {
+      let isGenericRegistry = false;
+      for (const identifier of traverse(typeReferenceNode)) {
+        if (
+          ts.isIdentifier(identifier) &&
+          identifier.getText() === 'GenericRegistry'
+        ) {
+          isGenericRegistry = true;
+          break;
+        }
+      }
+
+      if (isGenericRegistry) {
+        for (const typeLiteralNode of traverse(typeReferenceNode)) {
+          if (ts.isTypeLiteralNode(typeLiteralNode)) {
+            for (const syntaxListNode of traverse(typeLiteralNode)) {
+              if (isSyntaxList(syntaxListNode)) {
+                const text = syntaxListNode.getText().trim();
+                return {
+                  text:
+                    (text.length && !text.endsWith(',') && !text.endsWith(';')
+                      ? ','
+                      : '') + `'${serviceKey}': ${interfaceName}`,
+                  start: syntaxListNode.getEnd(),
+                  end: syntaxListNode.getEnd(),
+                };
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function getRegistryTypeMapImportReplacement(
+  sourceFile: ts.SourceFile,
+  kababPlural: string,
+  pascal: string,
+): Replacement {
+  const interfaceName = `I${pascal}Service`;
+
+  let lastImportEnd = 0;
+
+  for (const node of traverse(sourceFile)) {
+    if (ts.isImportDeclaration(node)) {
+      lastImportEnd = node.getEnd();
+      const contents = Array.from(traverse(node));
+
+      const module = contents.find(ts.isStringLiteral);
+      const interfaces = new Set(
+        contents.filter(ts.isIdentifier).map(x => x.getText()),
+      );
+
+      if (module.getText() !== `'./entities/${kababPlural}'`) continue;
+
+      if (interfaces.has(interfaceName)) continue;
+
+      const syntaxList = contents.find(isSyntaxList);
+
+      interfaces.add(interfaceName);
+
+      return {
+        text: Array.from(interfaces)
+          .sort((a, b) => a.localeCompare(b))
+          .join(', '),
+        start: syntaxList.getStart(),
+        end: syntaxList.getEnd(),
+      };
+    }
+  }
+
+  return {
+    text: `import { ${interfaceName} } from './entities/${kababPlural}';`,
+    start: lastImportEnd,
+    end: lastImportEnd,
+  };
+}
+
 export function addToServiceIndex(
   fileText: string,
   isClient: boolean,

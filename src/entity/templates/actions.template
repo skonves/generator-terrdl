@@ -6,7 +6,7 @@ import { Action, Type } from './action-types';
 
 export function load<%= pascal %>(<%= camel %>Id: string): Thunk {
   return async (dispatch, getState, registry) => {
-    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+    const <%= camel %>Service = registry.get('<%= kabab %>-service');
 
     const <%= camel %> = await <%= camel %>Service.get<%= pascal %>(<%= camel %>Id);
     dispatch(patch<%= pascal %>(<%= camel %>Id, <%= camel %>));
@@ -15,7 +15,7 @@ export function load<%= pascal %>(<%= camel %>Id: string): Thunk {
 
 export function create<%= pascal %>(<%= camel %>: New<%= pascal %>): Thunk {
   return async (dispatch, getState, registry) => {
-    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+    const <%= camel %>Service = registry.get('<%= kabab %>-service');
 
     const created<%= pascal %> = await <%= camel %>Service.create<%= pascal %>(<%= camel %>);
     dispatch(patch<%= pascal %>(created<%= pascal %>.id, created<%= pascal %>));
@@ -24,7 +24,7 @@ export function create<%= pascal %>(<%= camel %>: New<%= pascal %>): Thunk {
 
 export function update<%= pascal %>(<%= camel %>Id: string, updateData: <%= pascal %>Update): Thunk {
   return async (dispatch, getState, registry) => {
-    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+    const <%= camel %>Service = registry.get('<%= kabab %>-service');
 
     const updated<%= pascal %> = await <%= camel %>Service.update<%= pascal %>(
       <%= camel %>Id,
@@ -36,7 +36,7 @@ export function update<%= pascal %>(<%= camel %>Id: string, updateData: <%= pasc
 
 export function delete<%= pascal %>(<%= camel %>Id: string): Thunk {
   return async (dispatch, getState, registry) => {
-    const <%= camel %>Service = registry.get<I<%= pascal %>Service>('<%= camel %>-service');
+    const <%= camel %>Service = registry.get('<%= kabab %>-service');
 
     await <%= camel %>Service.delete<%= pascal %>(<%= camel %>Id);
     dispatch(unset<%= pascal %>(<%= camel %>Id));
