@@ -69,7 +69,7 @@ module.exports = class extends Generator {
   install() {
     this.npmInstall(
       [
-        'typescript@2',
+        'typescript@3',
         '@types/node',
         'prettier',
         'tslint',
@@ -88,33 +88,36 @@ module.exports = class extends Generator {
       },
     );
     this.npmInstall([
-      'react@^16.3',
-      'redux@^3',
+      'react@16',
+      'redux@4',
       'react-dom',
-      'react-redux@5',
+      'react-redux',
       'redux-thunk',
-      'react-router@^3',
+      'react-router@4',
+      'react-router-dom',
       'express',
       'flux-standard-functions',
     ]);
     this.npmInstall(
       [
-        '@types/react@^16.3',
+        '@types/react@16',
         '@types/react-dom',
-        '@types/react-redux@5',
-        '@types/react-router@3',
+        '@types/react-redux',
+        '@types/react-router',
+        '@types/react-router-dom',
         '@types/express',
+        'webpack-cli',
 
         'less',
 
         // Webpack
-        'webpack@3',
+        'webpack@4',
         'webpack-merge',
-        'ts-loader@3',
+        'ts-loader',
         'less-loader',
         'css-loader',
         'json-loader',
-        'extract-text-webpack-plugin',
+        'uglifyjs-webpack-plugin',
       ],
       {
         'save-dev': true,
