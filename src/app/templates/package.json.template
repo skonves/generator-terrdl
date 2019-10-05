@@ -5,9 +5,10 @@
   "main": "./.compiled/server/index.js",
   "scripts": {
     "prebuild": "npm run lint && rm -rf .compiled/*",
-    "build": "tsc && webpack",
+    "build": "webpack --config ./webpack.dev.js",
+    "build:prod": "webpack --config ./webpack.prod.js",
     "lint": "tslint -c tslint.json -e 'node_modules/**/*' '**/*.ts'",
-    "start": "node ./.compiled/server/index.js",
+    "start": "node ./.compiled/server/server.js",
     "test": "NODE_ENV=test nyc mocha --require source-map-support/register --require ts-node/register --recursive './src/**/*.tests.ts'"
   },
   "keywords": [],
