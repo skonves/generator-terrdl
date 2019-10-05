@@ -1,29 +1,18 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+import { render as renderTemplate } from 'ejs';
 
 import { ApplicationState } from '../common/entities';
 
-const files = fs.readdirSync(path.join(process.cwd(), '.compiled', 'dist'));
-const main = files.find(file => file.startsWith('main.'));
-const vendor = files.find(file => file.startsWith('vendor.'));
-const style = files.find(file => file.endsWith('.css'));
+const template = readFileSync(
+  join(process.cwd(), '.compiled', 'dist', 'index.ejs'),
+).toString();
 
 export function render(state: ApplicationState, html: string) {
-  return `
-<!doctype html>
-<html lang="utf-8">
-  <head>
-  <title>React App</title>
-  <link rel="stylesheet" type="text/css" href="/dist/${style}">
-  </head>
-  <body>
-  <div id="app">${html}</div>
-  <script>
-    window.$REDUX_STATE = ${JSON.stringify(state)};
-  </script>
-  <script src="/dist/${vendor}"></script>
-  <script src="/dist/${main}"></script>
-  </body>
-</html>
-`;
+  return renderTemplate(
+    template,
+    { state: JSON.stringify(state), html },
+    { delimiter: '$' },
+  );
 }

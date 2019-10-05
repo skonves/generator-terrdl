@@ -4,6 +4,9 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   </head>
   <body>
-    Hello World!
+    <div id="app"><$ if(html) { $><$- html $><$ } $></div>
+    <script>
+      window.$REDUX_STATE = '<$- state $>';
+    </script>
   </body>
 </html>
