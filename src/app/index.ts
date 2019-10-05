@@ -21,6 +21,8 @@ module.exports = class extends Generator {
       'webpack.common.js',
       'webpack.dev.js',
       'webpack.prod.js',
+      'Dockerfile',
+      '.dockerignore',
 
       // Client
       'src/client/index.tsx',
