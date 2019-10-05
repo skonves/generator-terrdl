@@ -28,10 +28,12 @@ const client = {
   },
   output: {
     path: path.resolve(__dirname, '.compiled', 'dist'),
+    publicPath: '/dist',
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/server/index.html',
+      template: './src/server/index.ejs',
+      filename: 'index.ejs',
     }),
   ],
   resolve: {

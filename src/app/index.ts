@@ -43,7 +43,7 @@ module.exports = class extends Generator {
 
       // Server
       'src/server/api/index.ts',
-      'src/server/index.html',
+      'src/server/index.ejs',
       'src/server/index.tsx',
       'src/server/page.ts',
       'src/server/registry.ts',
@@ -101,6 +101,7 @@ module.exports = class extends Generator {
       'express',
       'flux-standard-functions',
       'ts-registry',
+      'ejs',
     ]);
     this.npmInstall(
       [
@@ -110,6 +111,7 @@ module.exports = class extends Generator {
         '@types/react-router',
         '@types/react-router-dom',
         '@types/express',
+        '@types/ejs',
         'webpack-cli',
 
         'less',
