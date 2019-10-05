@@ -3,13 +3,12 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { hydrate } from 'react-dom';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
-import { Router } from 'react-router';
-import { browserHistory } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 
 import { registry } from './registry';
 import { reducers } from '../common/entities';
-import router from '../common/router';
 import { DispatchLock } from '../common/utils';
+import { App } from '../common/pages/app/app';
 
 const lock = new DispatchLock();
 const composeEnhancers =
@@ -24,7 +23,9 @@ const store = createStore(
 
 hydrate(
   <Provider store={store}>
-    <Router history={browserHistory} routes={router} />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </Provider>,
   document.querySelector('#app'),
 );
