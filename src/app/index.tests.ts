@@ -29,7 +29,7 @@ describe('ts-console:app', function() {
   });
 
   describe('defaults', () => {
-    it('genererates a valid application', async () => {
+    it('generates a valid application', async () => {
       // ARRANGE
 
       // ACT
