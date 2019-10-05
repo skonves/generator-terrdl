@@ -18,19 +18,20 @@ module.exports = class extends Generator {
       '.prettierrc',
       'tsconfig.json',
       'tslint.json',
-      'webpack.config.js',
+      'webpack.common.js',
+      'webpack.dev.js',
+      'webpack.prod.js',
 
       // Client
       'src/client/index.tsx',
       'src/client/registry.ts',
 
       // Common
-      'src/common/index.less',
+      'src/common/custom.d.ts',
       'src/common/entities/index.ts',
       'src/common/router/index.tsx',
       'src/common/pages/app/app.tsx',
       'src/common/pages/app/index.less',
-      'src/common/pages/index.less',
       'src/common/utils/dispatch-lock.tests.ts',
       'src/common/utils/dispatch-lock.ts',
       'src/common/utils/dispatch-monitor.tests.ts',
@@ -41,6 +42,7 @@ module.exports = class extends Generator {
 
       // Server
       'src/server/api/index.ts',
+      'src/server/index.html',
       'src/server/index.tsx',
       'src/server/page.ts',
       'src/server/registry.ts',
@@ -117,7 +119,11 @@ module.exports = class extends Generator {
         'less-loader',
         'css-loader',
         'json-loader',
-        'uglifyjs-webpack-plugin',
+        'css-hot-loader',
+        'html-webpack-plugin',
+        'mini-css-extract-plugin',
+        'null-loader',
+        'webpack-node-externals',
       ],
       {
         'save-dev': true,

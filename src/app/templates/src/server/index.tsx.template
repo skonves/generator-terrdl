@@ -17,7 +17,7 @@ import { DispatchLock, DispatchMonitor } from '../common/utils';
 const app = express();
 
 app.use('/api', api);
-app.use('/dist', express.static(path.join(__dirname, '../dist')));
+app.use('/dist', express.static(path.join(process.cwd(), '.compiled', 'dist')));
 
 app.get('*', async (req, res, next) => {
   // First-pass render

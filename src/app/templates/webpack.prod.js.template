@@ -1,0 +1,28 @@
+const path = require('path');
+
+const merge = require('webpack-merge');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+const [client, server] = require('./webpack.common.js');
+
+module.exports = [
+  merge(client, {
+    mode: 'production',
+    module: {
+      rules: [
+        {
+          test: /\.less$/,
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
+          exclude: /node_modules/,
+        },
+      ],
+    },
+    plugins: [
+      new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
+    ],
+    output: {
+      filename: '[name].[contenthash].js',
+    },
+  }),
+  server,
+];

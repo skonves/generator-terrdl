@@ -1,0 +1,70 @@
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
+
+const client = {
+  target: 'web',
+  entry: './src/client/index.tsx',
+  optimization: {
+    splitChunks: {
+      chunks: 'initial',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: 'ts-loader',
+      },
+    ],
+  },
+  output: {
+    path: path.resolve(__dirname, '.compiled', 'dist'),
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/server/index.html',
+    }),
+  ],
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx'],
+  },
+};
+
+const server = {
+  target: 'node',
+  entry: {
+    app: ['./src/server/index.tsx'],
+  },
+  output: {
+    path: path.resolve(__dirname, '.compiled', 'server'),
+    filename: 'server.js',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: 'ts-loader',
+      },
+      {
+        test: /\.less$/,
+        use: ['null-loader'],
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  externals: [nodeExternals()],
+  resolve: {
+    extensions: ['.js', '.ts', '.tsx'],
+  },
+};
+module.exports = [client, server];

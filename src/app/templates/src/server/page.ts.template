@@ -3,9 +3,10 @@ import * as path from 'path';
 
 import { ApplicationState } from '../common/entities';
 
-const files = fs.readdirSync(path.join(__dirname, '..', 'dist'));
-const bundle = files.find(file => file.startsWith('bundle.'));
-const style = files.find(file => file.startsWith('style.'));
+const files = fs.readdirSync(path.join(process.cwd(), '.compiled', 'dist'));
+const main = files.find(file => file.startsWith('main.'));
+const vendor = files.find(file => file.startsWith('vendor.'));
+const style = files.find(file => file.endsWith('.css'));
 
 export function render(state: ApplicationState, html: string) {
   return `
@@ -20,7 +21,8 @@ export function render(state: ApplicationState, html: string) {
   <script>
     window.$REDUX_STATE = ${JSON.stringify(state)};
   </script>
-  <script src="/dist/${bundle}"></script>
+  <script src="/dist/${vendor}"></script>
+  <script src="/dist/${main}"></script>
   </body>
 </html>
 `;
