@@ -6,7 +6,7 @@ import { render as renderTemplate } from 'ejs';
 import { ApplicationState } from '../common/entities';
 
 const template = readFileSync(
-  join(process.cwd(), '.compiled', 'dist', 'index.ejs'),
+  join(process.cwd(), '.compiled', 'dist', 'index.html'),
 ).toString();
 
 export function render(state: ApplicationState, html: string) {

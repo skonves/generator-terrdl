@@ -128,6 +128,7 @@ module.exports = class extends Generator {
         'mini-css-extract-plugin',
         'null-loader',
         'webpack-node-externals',
+        'webpack-dev-server',
       ],
       {
         'save-dev': true,

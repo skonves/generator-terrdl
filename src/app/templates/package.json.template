@@ -4,11 +4,13 @@
   "description": "<%= description %>",
   "main": "./.compiled/server/index.js",
   "scripts": {
-    "prebuild": "npm run lint && rm -rf .compiled/*",
-    "build": "webpack --config ./webpack.dev.js",
-    "build:prod": "webpack --config ./webpack.prod.js",
+    "clean": "npm run lint && rm -rf .compiled/*",
+    "prebuild": "npm run clean",
+    "build": "webpack --config ./webpack.prod.js",
+    "server": "node ./.compiled/server/server.js",
     "lint": "tslint -c tslint.json -e 'node_modules/**/*' '**/*.ts'",
-    "start": "node ./.compiled/server/server.js",
+    "prestart": "npm run clean && tsc",
+    "start": "webpack-dev-server --config webpack.dev.js",
     "test": "NODE_ENV=test nyc mocha --require source-map-support/register --require ts-node/register --recursive './src/**/*.tests.ts'"
   },
   "keywords": [],

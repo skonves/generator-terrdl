@@ -3,13 +3,13 @@
     "lib": ["es2015", "dom"],
     "module": "commonjs",
     "noImplicitReturns": true,
-    "outDir": ".compiled",
+    "outDir": ".compiled/api",
     "sourceMap": true,
     "target": "es5",
     "jsx": "react",
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+  "include": ["./src/server/api/index.ts"],
   "exclude": ["./src/client/"]
 }

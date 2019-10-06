@@ -33,7 +33,7 @@ const client = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './src/server/index.ejs',
-      filename: 'index.ejs',
+      filename: 'index.html',
     }),
   ],
   resolve: {
