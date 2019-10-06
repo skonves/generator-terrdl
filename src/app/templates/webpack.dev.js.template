@@ -5,37 +5,41 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const [client, server] = require('./webpack.common.js');
+const api = require('./.compiled/api');
 
-module.exports = [
-  merge(client, {
-    mode: 'development',
-    devServer: {
-      contentBase: path.join(__dirname, '.compiled', 'dist'),
-      port: 9000,
-      hot: true,
+module.exports = merge(client, {
+  mode: 'development',
+  devServer: {
+    contentBase: path.join(__dirname, '.compiled', 'dist'),
+    port: 9000,
+    hot: true,
+    historyApiFallback: {
+      rewrites: [{ from: /.*/, to: '/dist/index.html' }],
     },
-    devtool: 'inline-source-map',
-    module: {
-      rules: [
-        {
-          test: /\.less$/,
-          use: [
-            'css-hot-loader',
-            MiniCssExtractPlugin.loader,
-            'css-loader',
-            'less-loader',
-          ],
-          exclude: /node_modules/,
-        },
-      ],
+    before: function(app) {
+      app.use('/api', api.app);
     },
-    plugins: [
-      new webpack.HotModuleReplacementPlugin(),
-      new MiniCssExtractPlugin({ filename: '[name].css' }),
+  },
+  devtool: 'inline-source-map',
+  module: {
+    rules: [
+      {
+        test: /\.less$/,
+        use: [
+          'css-hot-loader',
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'less-loader',
+        ],
+        exclude: /node_modules/,
+      },
     ],
-    output: {
-      filename: '[name].js',
-    },
-  }),
-  merge(server, { mode: 'development' }),
-];
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new MiniCssExtractPlugin({ filename: '[name].css' }),
+  ],
+  output: {
+    filename: '[name].js',
+  },
+});
