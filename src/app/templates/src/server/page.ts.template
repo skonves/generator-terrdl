@@ -4,7 +4,7 @@ import * as path from 'path';
 import { ApplicationState } from '../common/entities';
 
 const files = fs.readdirSync(path.join(process.cwd(), '.compiled', 'dist'));
-const main = files.find(file => file.startsWith('main.'));
+const main = files.find(file => file.startsWith('main.') && file.endsWith('.js'));
 const vendor = files.find(file => file.startsWith('vendor.'));
 const style = files.find(file => file.endsWith('.css'));
 
