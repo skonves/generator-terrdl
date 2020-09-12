@@ -34,6 +34,7 @@ const client = {
     new HtmlWebpackPlugin({
       template: './src/server/index.ejs',
       filename: 'index.html',
+      minify: false,
     }),
   ],
   resolve: {
