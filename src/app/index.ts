@@ -72,7 +72,7 @@ module.exports = class extends Generator {
   install() {
     this.npmInstall(
       [
-        'typescript@3',
+        'typescript',
         '@types/node',
         'prettier',
         'tslint',
@@ -96,7 +96,7 @@ module.exports = class extends Generator {
       'react-dom',
       'react-redux',
       'redux-thunk',
-      'react-router@4',
+      'react-router',
       'react-router-dom',
       'express',
       'flux-standard-functions',
@@ -118,7 +118,7 @@ module.exports = class extends Generator {
 
         // Webpack
         'webpack@4',
-        'webpack-merge',
+        'webpack-merge@4',
         'ts-loader',
         'less-loader',
         'css-loader',
